@@ -1,9 +1,20 @@
-name: TG_Userbot_Workflow
-
+name: Test
 on:
+    schedule:
+      - cron: "0 */6 * * *"
     push:
+      branches: [ main ]
     workflow_dispatch:
     
+env:
+  API_ID: "${{ secrets.API_ID }}"
+  API_HASH: "${{ secrets.API_HASH }}"
+  BOT_TOKEN: "${{ secrets.BOT_TOKEN }}"
+  REDIS_URI: "${{ secrets.REDIS_URI }}"
+  REDIS_PASSWORD: "${{ secrets.REDIS_PASSWORD }}"
+  SESSION: "${{ secrets.SESSION }}"
+  LOG_CHANNEL: "${{ secrets.LOG_CHANNEL }}"
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -11,34 +22,34 @@ jobs:
     steps:
        - name: Checkout
          uses: actions/checkout@main
-       
+         
        - uses: styfle/cancel-workflow-action@0.9.0
-         name: "Cancel duplicate workflow runs"
+         name: "Cancelling duplicate workflow runs"
          with:
             all_but_latest: true
             access_token: ${{ github.token }}
-       - name: Initialization
+       - uses: actions/setup-node@v2
+         with:
+            node-version: '16'
+       - name: Set up Python 3.9
+         uses: actions/setup-python@v2.2.2
+         with:
+           python-version: 3.9
+       - name: cloning repo and install
+
          continue-on-error: true
          run: |
-           git config --global user.name ${{ secrets.GH_NAME }}
-           git config --global user.email ${{ secrets.GH_MAIL }}
-           git config --global credential.helper store
-           echo "https://${{ secrets.GH_NAME }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-       - name: Cloning Repo
-         continue-on-error: true
-         run: |
-           git clone https://${{ secrets.GH_NAME }}:${{ secrets.GH_TOKEN }}@${{ secrets.CREDS }} CREDS
+          #  echo "API_ID=${{ secrets.API_ID }} | tee .env
+          #  echo "API_HASH=${{ secrets.API_HASH }} | tee -a .env
+          #  echo "LOG_CHANNEL=${{ secrets.LOG_CHANNEL }} | tee -a .env
+          #  echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} | tee -a .env
+          #  echo "SESSION=${{ secrets.SESSION }} | tee -a .env
+          #  echo "REDIS_URI=${{ secrets.REDIS_URI }} | tee -a .env
+          #  echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }} | tee -a .env || echo "Proceeding with bot"
+          #  cat .env
        - name: Running Userbot
          timeout-minutes: 350
          continue-on-error: true
          run: |
            sudo sh ultroid.sh
-       - name: Loop workflow
-         continue-on-error: true
-         run: |
-              git clone https://github.com/${{ secrets.GH_REPO }} loop
-              cd loop || exit 1
-              echo $(TZ='${{ secrets.TZ }}' date) >> loop.txt
-              git add loop.txt
-              git commit -m "Workflow : Loop $(TZ='${{ secrets.TZ }}' date)"
-              git push -q https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.GH_REPO }} HEAD:main
+           echo "Bot Started"

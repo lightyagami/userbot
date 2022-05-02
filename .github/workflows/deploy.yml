@@ -47,9 +47,9 @@ jobs:
           #  echo "REDIS_URI=${{ secrets.REDIS_URI }} | tee -a .env
           #  echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }} | tee -a .env || echo "Proceeding with bot"
           #  cat .env
-       - name: Running Userbot
+       - name: Running
          timeout-minutes: 350
          continue-on-error: true
          run: |
-           sudo sh ultroid.sh
+           python(3) -m pyUltroid
            echo "Bot Started"
